@@ -36,5 +36,6 @@ type Result struct {
 
 type Data struct {
 	Invoices  []Invoice  `xml:"invoice"`
+	Vendors   []Vendor   `xml:"vendor"`
 	Customers []Customer `xml:"customer"`
 }

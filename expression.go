@@ -96,6 +96,7 @@ func LTE(field, value string) Expression {
 
 // TODO list all possible fields?
 const (
+	Name        Field = "name"
 	CustomerID  Field = "customerid"
 	InvoiceNo   Field = "invoiceno"
 	DateCreated Field = "datecreated"

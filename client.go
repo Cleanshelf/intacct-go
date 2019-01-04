@@ -60,21 +60,23 @@ func (c Client) CheckResponseErrors(body Response) error {
 	return nil
 }
 
-func NewClient(config Config) Client {
-	return Client{Client: &http.Client{}, config: config}
+func NewClient(requestClient *http.Client, config Config) Client {
+	return Client{Client: requestClient, config: config}
 }
 
 type API struct {
 	Client
 	Invoices  Invoices
+	Vendors   Vendors
 	Customers Customers
 }
 
-func NewAPI(config Config) (api API) {
+func NewAPI(requestClient *http.Client, config Config) (api API) {
 	// Pass the current client to each of the sub-clients
-	client := NewClient(config)
+	client := NewClient(requestClient, config)
 	api.Client = client
 	api.Invoices = Invoices{Client: client}
+	api.Vendors = Vendors{Client: client, Log: log}
 	api.Customers = Customers{Client: client}
 	return api
 }

@@ -2,29 +2,31 @@ package intacct
 
 import (
 	"encoding/xml"
-	// "time"
+	"time"
+	"strconv"
 )
 
 const (
-	Version2 = "2.1"
+	Version3 = "3.0"
 )
 
 type Control struct {
-	XMLName    xml.Name `xml:"control"`
-	Status     string   `xml:"status,omitempty"` // Only response
-	SenderID   string   `xml:"senderid"`
-	Password   string   `xml:"password"`
-	ControlID  string   `xml:"controlid"`
-	UniqueID   bool     `xml:"uniqueid"`
-	DTDVersion string   `xml:"dtdversion"`
+	XMLName           xml.Name `xml:"control"`
+	Status            string   `xml:"status,omitempty"` // Only response
+	SenderID          string   `xml:"senderid"`
+	Password          string   `xml:"password"`
+	ControlID         string   `xml:"controlid"`
+	UniqueID          bool     `xml:"uniqueid"`
+	DTDVersion        string   `xml:"dtdversion"`
+	Includewhitespace bool     `xml:"includewhitespace"`
 }
 
 func NewControlV2(sender, password string) Control {
 	return Control{
 		SenderID:   sender,
 		Password:   password,
-		ControlID:  "controlID", // TODO Different modes? enforce usage?
-		DTDVersion: Version2,
+		ControlID:  strconv.FormatInt(time.Now().Unix(), 10),
+		DTDVersion: Version3,
 	}
 }
 

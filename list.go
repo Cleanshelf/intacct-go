@@ -16,7 +16,7 @@ type GetList struct {
 // TODO How to support multiple or nested filter expressions?
 type ListParams struct {
 	MaxItems uint64  `xml:"maxitems,attr"`
-	Filter   Logical `xml:"filter"`
+	Filter   Logical `xml:"filter,omitempty"`
 	Sorts    Sorts   `xml:"sorts"`
 }
 
