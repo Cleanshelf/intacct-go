@@ -35,7 +35,9 @@ type Result struct {
 }
 
 type Data struct {
-	Invoices  []Invoice  `xml:"invoice"`
-	Vendors   []Vendor   `xml:"vendor"`
-	Customers []Customer `xml:"customer"`
+	Invoices   []Invoice   `xml:"invoice"`
+	Vendors    []Vendor    `xml:"vendor"`
+	Bills      []Bill      `xml:"apbill"`
+	APPayments []APPayment `xml:"appymt"`
+	Customers  []Customer  `xml:"customer"`
 }
