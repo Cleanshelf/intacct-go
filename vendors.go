@@ -79,14 +79,7 @@ type Vendors struct {
 	Client
 }
 
-func (vendors Vendors) List(params ...interface{}) ([]Vendor, error) {
-	list := ReadByQuery{
-		Object:   "vendor",
-		Fields:   "VENDORID,NAME,STATUS",
-		Query:    "",
-		Pagesize: 30,
-	}
-
+func (vendors Vendors) makeRequest(list interface{}) ([]Vendor, string, error) {
 	get := Function{
 		ControlID: "testControlID",
 		Method:    list,
@@ -94,34 +87,71 @@ func (vendors Vendors) List(params ...interface{}) ([]Vendor, error) {
 	// Create a new request using the Client
 	req, err := vendors.Client.NewRequest(get)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	resp, err := vendors.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	defer resp.Body.Close()
 
 	var body Response
 	if err = xml.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// Check the response for errors
 	if err = vendors.Client.CheckResponseErrors(body); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// TODO pull out status code and body status checks into client
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		bodyString := string(body)
-		return nil, fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
+		return nil, "", fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
 	}
 
-	return body.Operation.Result.Data.Vendors, nil
+	return body.Operation.Result.Data.Vendors, body.Operation.Result.Data.ResultId, nil
+}
+func (vendors Vendors) List(limit int) ([]Vendor, error) {
+	list := ReadByQuery{
+		Object:   "vendor",
+		Fields:   "VENDORID,NAME,STATUS",
+		Query:    "",
+		Pagesize: 1000,
+	}
+
+	vendorsList, next, err := vendors.makeRequest(list)
+	if err != nil {
+		return vendorsList, err
+	}
+
+	if len(vendorsList) >= limit {
+		return vendorsList[:limit], nil
+	}
+
+	for next != "" {
+		list := ReadMore{
+			ResultId: next,
+		}
+		var err error
+		var vendorsPage []Vendor
+		vendorsPage, next, err = vendors.makeRequest(list)
+		if err != nil {
+			return vendorsList, err
+		}
+		for _, bill := range vendorsPage {
+			vendorsList = append(vendorsList, bill)
+			if len(vendorsList) >= limit {
+				return vendorsList[:limit], nil
+			}
+		}
+	}
+
+	return vendorsList, nil
 }

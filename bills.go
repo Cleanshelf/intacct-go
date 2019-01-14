@@ -108,14 +108,7 @@ type Bills struct {
 	Client
 }
 
-func (bills Bills) List(vendorID string, limit int) ([]Bill, error) {
-	list := ReadByQuery{
-		Object:   "APBILL",
-		Fields:   "*", //TODO
-		Query:    "VENDORID = '" + vendorID + "'",
-		Pagesize: limit,
-	}
-
+func (bills Bills) makeRequest(list interface{}) ([]Bill, string, error) {
 	get := Function{
 		ControlID: "testControlID",
 		Method:    list,
@@ -123,34 +116,72 @@ func (bills Bills) List(vendorID string, limit int) ([]Bill, error) {
 	// Create a new request using the Client
 	req, err := bills.Client.NewRequest(get)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	resp, err := bills.Client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	defer resp.Body.Close()
 
 	var body Response
 	if err = xml.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// Check the response for errors
 	if err = bills.Client.CheckResponseErrors(body); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	// TODO pull out status code and body status checks into client
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return nil, err
+			return nil, "", err
 		}
 		bodyString := string(body)
-		return nil, fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
+		return nil, "", fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
 	}
 
-	return body.Operation.Result.Data.Bills, nil
+	return body.Operation.Result.Data.Bills, body.Operation.Result.Data.ResultId, nil
+}
+
+func (bills Bills) List(vendorID string, fromDate string, limit int) ([]Bill, error) {
+	list := ReadByQuery{
+		Object:   "APBILL",
+		Fields:   "*", //TODO
+		Query:    "VENDORID='" + vendorID + " AND WHENCREATED >= '" + fromDate + "'",
+		Pagesize: 1000,
+	}
+
+	billsList, next, err := bills.makeRequest(list)
+	if err != nil {
+		return billsList, err
+	}
+
+	if len(billsList) >= limit {
+		return billsList[:limit], nil
+	}
+
+	for next != "" {
+		list := ReadMore{
+			ResultId: next,
+		}
+		var err error
+		var billsPage []Bill
+		billsPage, next, err = bills.makeRequest(list)
+		if err != nil {
+			return billsList, err
+		}
+		for _, bill := range billsPage {
+			billsList = append(billsList, bill)
+			if len(billsList) >= limit {
+				return billsList[:limit], nil
+			}
+		}
+	}
+
+	return billsList, nil
 }

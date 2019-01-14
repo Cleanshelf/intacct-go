@@ -35,6 +35,10 @@ type Result struct {
 }
 
 type Data struct {
+	NumRemaining int    `xml:"numRemaining,attr"`
+	ResultId     string `xml:"resultId,attr"`
+	TotalCount   int    `xml:"totalcount,attr"`
+
 	Invoices   []Invoice   `xml:"invoice"`
 	Vendors    []Vendor    `xml:"vendor"`
 	Bills      []Bill      `xml:"apbill"`
