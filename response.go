@@ -30,7 +30,8 @@ type Result struct {
 	Status    string `xml:"status"`
 	Function  string `xml:"function"`
 	ControlID string `xml:"controlid"`
-	// TODO listtype?
+	ListType  string `xml:"listtype"`
+
 	Data Data `xml:"data"`
 }
 
@@ -44,4 +45,6 @@ type Data struct {
 	Bills      []Bill      `xml:"apbill"`
 	APPayments []APPayment `xml:"appymt"`
 	Customers  []Customer  `xml:"customer"`
+
+	Supdocs []Supdoc `xml:"supdoc"`
 }

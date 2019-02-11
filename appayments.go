@@ -62,6 +62,7 @@ func (apPayments APPayments) List() ([]APPayment, error) {
 		ControlID: "testControlID",
 		Method:    list,
 	}
+
 	// Create a new request using the Client
 	req, err := apPayments.Client.NewRequest(get)
 	if err != nil {

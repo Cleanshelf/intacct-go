@@ -11,6 +11,13 @@ type GetList struct {
 	ListParams
 }
 
+type Get struct {
+	XMLName xml.Name `xml:"get"`
+
+	Object string `xml:"object,attr"`
+	Key    string `xml:"key,attr"`
+}
+
 type ReadByQuery struct {
 	XMLName  xml.Name `xml:"readByQuery"`
 	Object   string   `xml:"object"`

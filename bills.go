@@ -152,7 +152,7 @@ func (bills Bills) List(vendorID string, fromDate string, limit int) ([]Bill, er
 	list := ReadByQuery{
 		Object:   "APBILL",
 		Fields:   "*", //TODO
-		Query:    "VENDORID='" + vendorID + " AND WHENCREATED >= '" + fromDate + "'",
+		Query:    "VENDORID='" + vendorID + "' AND WHENCREATED >= '" + fromDate + "'",
 		Pagesize: 1000,
 	}
 
