@@ -2,8 +2,8 @@ package intacct
 
 import (
 	"encoding/xml"
-	"time"
 	"strconv"
+	"time"
 )
 
 const (

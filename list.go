@@ -11,6 +11,26 @@ type GetList struct {
 	ListParams
 }
 
+type Get struct {
+	XMLName xml.Name `xml:"get"`
+
+	Object string `xml:"object,attr"`
+	Key    string `xml:"key,attr"`
+}
+
+type ReadByQuery struct {
+	XMLName  xml.Name `xml:"readByQuery"`
+	Object   string   `xml:"object"`
+	Fields   string   `xml:"fields"`
+	Query    string   `xml:"query"`
+	Pagesize int      `xml:"pagesize"`
+}
+
+type ReadMore struct {
+	XMLName  xml.Name `xml:"readMore"`
+	ResultId string   `xml:"resultId"`
+}
+
 // TODO params should include filters, sorts, max items?
 // Filters and sorts can be attached to the params or passed directly to List
 // TODO How to support multiple or nested filter expressions?

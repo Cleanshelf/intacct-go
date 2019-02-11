@@ -30,7 +30,7 @@ func (c Client) NewRequest(m Method) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Errorf("%s", string(b))
 	// TODO Add buffer?
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(b))
 	if err != nil {
@@ -66,9 +66,12 @@ func NewClient(requestClient *http.Client, config Config) Client {
 
 type API struct {
 	Client
-	Invoices  Invoices
-	Vendors   Vendors
-	Customers Customers
+	Invoices    Invoices
+	Vendors     Vendors
+	Customers   Customers
+	Bills       Bills
+	APPayments  APPayments
+	Attachments Attachments
 }
 
 func NewAPI(requestClient *http.Client, config Config) (api API) {
@@ -76,8 +79,11 @@ func NewAPI(requestClient *http.Client, config Config) (api API) {
 	client := NewClient(requestClient, config)
 	api.Client = client
 	api.Invoices = Invoices{Client: client}
-	api.Vendors = Vendors{Client: client, Log: log}
+	api.Vendors = Vendors{Client: client}
 	api.Customers = Customers{Client: client}
+	api.Bills = Bills{Client: client}
+	api.APPayments = APPayments{Client: client}
+	api.Attachments = Attachments{Client: client}
 	return api
 }
 

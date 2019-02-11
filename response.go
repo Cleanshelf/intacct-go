@@ -30,12 +30,21 @@ type Result struct {
 	Status    string `xml:"status"`
 	Function  string `xml:"function"`
 	ControlID string `xml:"controlid"`
-	// TODO listtype?
+	ListType  string `xml:"listtype"`
+
 	Data Data `xml:"data"`
 }
 
 type Data struct {
-	Invoices  []Invoice  `xml:"invoice"`
-	Vendors   []Vendor   `xml:"vendor"`
-	Customers []Customer `xml:"customer"`
+	NumRemaining int    `xml:"numRemaining,attr"`
+	ResultId     string `xml:"resultId,attr"`
+	TotalCount   int    `xml:"totalcount,attr"`
+
+	Invoices   []Invoice   `xml:"invoice"`
+	Vendors    []Vendor    `xml:"vendor"`
+	Bills      []Bill      `xml:"apbill"`
+	APPayments []APPayment `xml:"appymt"`
+	Customers  []Customer  `xml:"customer"`
+
+	Supdocs []Supdoc `xml:"supdoc"`
 }
