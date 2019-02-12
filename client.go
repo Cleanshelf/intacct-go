@@ -30,7 +30,6 @@ func (c Client) NewRequest(m Method) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Errorf("%s", string(b))
 	// TODO Add buffer?
 	req, err := http.NewRequest("POST", apiURL, bytes.NewBuffer(b))
 	if err != nil {
@@ -50,17 +49,19 @@ func (c Client) CheckResponseErrors(body Response) error {
 		)
 	}
 
-	// TODO Where do all the errors hide?
-	// if body.Operation.Result.Status != Success {
-	// 	return fmt.Errorf(
-	// 		"unexpected operation result status (%s): %s",
-	// 		body.Operation.Result.Status, body.Errors,
-	// 	)
-	// }
+	if body.Operation.Result.Status != Success && len(body.Operation.Result.ErrorMessage.Errors) > 0 {
+		errorDesc := body.Operation.Result.ErrorMessage.Errors[0].Description
+		if errorDesc == "" {
+			errorDesc = body.Operation.Result.ErrorMessage.Errors[0].Description2
+		}
+		return fmt.Errorf(
+			"%s", errorDesc,
+		)
+	}
 	return nil
 }
 
-func NewClient(requestClient *http.Client, config Config) Client {
+func newClient(requestClient *http.Client, config Config) Client {
 	return Client{Client: requestClient, config: config}
 }
 
@@ -76,7 +77,7 @@ type API struct {
 
 func NewAPI(requestClient *http.Client, config Config) (api API) {
 	// Pass the current client to each of the sub-clients
-	client := NewClient(requestClient, config)
+	client := newClient(requestClient, config)
 	api.Client = client
 	api.Invoices = Invoices{Client: client}
 	api.Vendors = Vendors{Client: client}
