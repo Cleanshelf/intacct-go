@@ -27,12 +27,28 @@ type ResultOperation struct {
 
 // TODO Or use delayed parsing?
 type Result struct {
-	Status    string `xml:"status"`
-	Function  string `xml:"function"`
-	ControlID string `xml:"controlid"`
-	ListType  string `xml:"listtype"`
+	Status       string `xml:"status"`
+	Function     string `xml:"function"`
+	ControlID    string `xml:"controlid"`
+	ListType     string `xml:"listtype"`
+	ErrorMessage ErrorMessage
 
 	Data Data `xml:"data"`
+}
+
+type ErrorMessage struct {
+	XMLName xml.Name `xml:"errormessage"`
+
+	Errors []ResponseError `xml:"error"`
+}
+
+type ResponseError struct {
+	XMLName xml.Name `xml:"error"`
+
+	ErrorNo      string `xml:"errorno"`
+	Description  string `xml:"description"`
+	Description2 string `xml:"description2"`
+	Correction   string `xml:"correction"`
 }
 
 type Data struct {

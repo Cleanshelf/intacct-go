@@ -42,7 +42,6 @@ type Attachments struct {
 func (attachments Attachments) makeRequest(list interface{}) ([]Supdoc, error) {
 	var docs []Supdoc
 	get := &Function{
-		XMLName:   xml.Name{Local: "function"},
 		ControlID: "testControlID",
 		Method:    list,
 	}
