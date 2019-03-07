@@ -118,7 +118,45 @@ func (vendors Vendors) makeRequest(list interface{}) ([]Vendor, string, error) {
 
 	return body.Operation.Result.Data.Vendors, body.Operation.Result.Data.ResultId, nil
 }
-func (vendors Vendors) List(limit int,  query string) ([]Vendor, error) {
+func (vendors Vendors) List(limit int) ([]Vendor, error) {
+	list := ReadByQuery{
+		Object:   "vendor",
+		Fields:   "VENDORID,NAME,STATUS",
+		Query:    "",
+		Pagesize: 1000,
+	}
+
+	vendorsList, next, err := vendors.makeRequest(list)
+	if err != nil {
+		return vendorsList, err
+	}
+
+	if len(vendorsList) >= limit {
+		return vendorsList[:limit], nil
+	}
+
+	for next != "" {
+		list := ReadMore{
+			ResultId: next,
+		}
+		var err error
+		var vendorsPage []Vendor
+		vendorsPage, next, err = vendors.makeRequest(list)
+		if err != nil {
+			return vendorsList, err
+		}
+		for _, bill := range vendorsPage {
+			vendorsList = append(vendorsList, bill)
+			if len(vendorsList) >= limit {
+				return vendorsList[:limit], nil
+			}
+		}
+	}
+
+	return vendorsList, nil
+}
+
+func (vendors Vendors) ListByName(limit int, query string) ([]Vendor, error) {
 	list := ReadByQuery{
 		Object:   "vendor",
 		Fields:   "VENDORID,NAME,STATUS",
