@@ -118,11 +118,11 @@ func (vendors Vendors) makeRequest(list interface{}) ([]Vendor, string, error) {
 
 	return body.Operation.Result.Data.Vendors, body.Operation.Result.Data.ResultId, nil
 }
-func (vendors Vendors) List(limit int) ([]Vendor, error) {
+func (vendors Vendors) List(limit int,  query string) ([]Vendor, error) {
 	list := ReadByQuery{
 		Object:   "vendor",
 		Fields:   "VENDORID,NAME,STATUS",
-		Query:    "",
+		Query:    query,
 		Pagesize: 1000,
 	}
 
