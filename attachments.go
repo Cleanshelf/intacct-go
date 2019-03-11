@@ -90,5 +90,9 @@ func (attachments Attachments) Get(key string) (Supdoc, error) {
 		return Supdoc{}, err
 	}
 
-	return docs[0], nil
+	if len(docs) > 0 {
+		return docs[0], nil
+	}
+
+	return Supdoc{}, nil
 }
