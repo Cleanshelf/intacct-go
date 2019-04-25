@@ -122,17 +122,14 @@ func (bills Bills) List(vendorID string, fromDate string, limit int) ([]Bill, er
 
 	itemList = data.Bills
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 
 		var err error
-		pageData, _, err := bills.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = bills.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}

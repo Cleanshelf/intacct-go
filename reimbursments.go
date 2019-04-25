@@ -36,16 +36,13 @@ func (epPayments EPPayments) List(fromDate string, limit int) ([]EPPayment, erro
 
 	itemList = data.EPPayments
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 		var err error
-		pageData, _, err := epPayments.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = epPayments.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}

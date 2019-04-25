@@ -43,17 +43,14 @@ func (apPayments APPayments) List(vendorID string, fromDate string, limit int) (
 
 	itemList = data.APPayments
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 
 		var err error
-		pageData, _, err := apPayments.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = apPayments.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}

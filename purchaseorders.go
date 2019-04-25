@@ -42,16 +42,13 @@ func (poDocuments PODocuments) List(vendorID string, fromDate string, limit int)
 
 	itemList = data.PODocuments
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 		var err error
-		pageData, _, err := poDocuments.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = poDocuments.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}

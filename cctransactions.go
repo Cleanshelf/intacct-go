@@ -38,16 +38,13 @@ func (ccTransactions CCTransactions) List(fromDate string, limit int) ([]CCTrans
 
 	itemList = data.CCTransactions
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 		var err error
-		pageData, _, err := ccTransactions.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = ccTransactions.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}

@@ -47,17 +47,14 @@ func (apRecurBills APRecurBills) List(vendorID string, fromDate string, limit in
 
 	itemList = data.APRecurBills
 
-	if len(itemList) >= limit {
-		return itemList[:limit], nil
-	}
-
 	for next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
 
 		var err error
-		pageData, _, err := apRecurBills.Client.makeRequestByQuery(list)
+		var pageData *Data
+		pageData, next, err = apRecurBills.Client.makeRequestByQuery(list)
 		if err != nil {
 			return itemList, err
 		}
