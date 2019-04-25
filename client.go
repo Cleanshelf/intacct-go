@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"io/ioutil"
 )
 
 const ContentType = `x-intacct-xml-request`
@@ -61,18 +62,63 @@ func (c Client) CheckResponseErrors(body Response) error {
 	return nil
 }
 
+
+func (c Client) makeRequestByQuery(list interface{}) (*Data, string, error) {
+	get := Function{
+		ControlID: "testControlID",
+		Method:    list,
+	}
+	// Create a new request using the Client
+	req, err := c.NewRequest(get)
+	if err != nil {
+		return nil, "", err
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return nil, "", err
+	}
+	defer resp.Body.Close()
+
+	var body Response
+	if err = xml.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, "", err
+	}
+
+	// Check the response for errors
+	if err = c.CheckResponseErrors(body); err != nil {
+		return nil, "", err
+	}
+
+	// TODO pull out status code and body status checks into client
+	if resp.StatusCode != http.StatusOK {
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+		bodyString := string(body)
+		return nil, "", fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
+	}
+
+	return &body.Operation.Result.Data, body.Operation.Result.Data.ResultId, nil
+}
+
 func newClient(requestClient *http.Client, config Config) Client {
 	return Client{Client: requestClient, config: config}
 }
 
 type API struct {
 	Client
-	Invoices    Invoices
-	Vendors     Vendors
-	Customers   Customers
-	Bills       Bills
-	APPayments  APPayments
-	Attachments Attachments
+	Invoices       Invoices
+	Vendors        Vendors
+	Customers      Customers
+	Bills          Bills
+	APRecurBills   APRecurBills
+	APPayments     APPayments
+	CCTransactions CCTransactions
+	EPPayments     EPPayments
+	PODocuments    PODocuments
+	Attachments    Attachments
 }
 
 func NewAPI(requestClient *http.Client, config Config) (api API) {
@@ -83,7 +129,11 @@ func NewAPI(requestClient *http.Client, config Config) (api API) {
 	api.Vendors = Vendors{Client: client}
 	api.Customers = Customers{Client: client}
 	api.Bills = Bills{Client: client}
+	api.APRecurBills = APRecurBills{Client: client}
 	api.APPayments = APPayments{Client: client}
+	api.CCTransactions = CCTransactions{Client: client}
+	api.EPPayments = EPPayments{Client: client}
+	api.PODocuments = PODocuments{Client: client}
 	api.Attachments = Attachments{Client: client}
 	return api
 }

@@ -2,9 +2,6 @@ package intacct
 
 import (
 	"encoding/xml"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
 type APPayment struct {
@@ -23,77 +20,52 @@ type APPayment struct {
 	Basecurr             string            `xml:"BASECURR"`
 	Amounttopay          string            `xml:"AMOUNTTOPAY"`
 	Action               string            `xml:"ACTION"`
-	Appymtdetails        []APPaymentDetail `xml:"APPYMTDETAILS"`
 }
 
-type APPaymentDetail struct {
-	XMLName xml.Name `xml:"appymtdetail"`
-
-	Recordkey               string `xml:"RECORDKEY"`
-	Entrykey                string `xml:"ENTRYKEY"`
-	Entrycurrency           string `xml:"ENTRYCURRENCY"`
-	Posadjkey               string `xml:"POSADJKEY"`
-	Posadjentrykey          string `xml:"POSADJENTRYKEY"`
-	Trx_paymentamount       string `xml:"TRX_PAYMENTAMOUNT"`
-	Inlinekey               string `xml:"INLINEKEY"`
-	Inlineentrykey          string `xml:"INLINEENTRYKEY"`
-	Trx_inlineamount        string `xml:"TRX_INLINEAMOUNT"`
-	Discountdate            string `xml:"DISCOUNTDATE"`
-	Adjustmentkey           string `xml:"ADJUSTMENTKEY"`
-	Adjustmententrykey      string `xml:"ADJUSTMENTENTRYKEY"`
-	Trx_adjustmentamount    string `xml:"TRX_ADJUSTMENTAMOUNT"`
-	Advancekey              string `xml:"ADVANCEKEY"`
-	Advanceentrykey         string `xml:"ADVANCEENTRYKEY"`
-	Trx_postedadvanceamount string `xml:"TRX_POSTEDADVANCEAMOUNT"`
-}
 type APPayments struct {
 	Client
 }
 
-func (apPayments APPayments) List() ([]APPayment, error) {
+func (apPayments APPayments) List(vendorID string, fromDate string, limit int) ([]APPayment, error) {
+	itemList := make([]APPayment, 0)
+
 	list := ReadByQuery{
 		Object:   "APPYMT",
 		Fields:   "*",
-		Query:    "",
+		Query:    "VENDORID='" + vendorID + "' AND WHENCREATED >= '" + fromDate + "'",
 		Pagesize: 1000,
 	}
 
-	get := Function{
-		ControlID: "testControlID",
-		Method:    list,
-	}
-
-	// Create a new request using the Client
-	req, err := apPayments.Client.NewRequest(get)
+	data, next, err := apPayments.Client.makeRequestByQuery(list)
 	if err != nil {
-		return nil, err
+		return itemList, err
 	}
 
-	resp, err := apPayments.Client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+	itemList = data.APPayments
 
-	var body Response
-	if err = xml.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, err
+	if len(itemList) >= limit {
+		return itemList[:limit], nil
 	}
 
-	// Check the response for errors
-	if err = apPayments.Client.CheckResponseErrors(body); err != nil {
-		return nil, err
-	}
-
-	// TODO pull out status code and body status checks into client
-	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, err
+	for next != "" {
+		list := ReadMore{
+			ResultId: next,
 		}
-		bodyString := string(body)
-		return nil, fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
+
+		var err error
+		pageData, _, err := apPayments.Client.makeRequestByQuery(list)
+		if err != nil {
+			return itemList, err
+		}
+
+		page := pageData.APPayments
+		for _, item := range page {
+			itemList = append(itemList, item)
+			if len(itemList) >= limit {
+				return itemList[:limit], nil
+			}
+		}
 	}
 
-	return body.Operation.Result.Data.APPayments, nil
+	return itemList, nil
 }
