@@ -7,14 +7,22 @@ import (
 type CCTransaction struct {
 	XMLName xml.Name `xml:"cctransaction"`
 
-	RecordNo        string `xml:"RECORDNO"`
-	Financialentity string `xml:"FINANCIALENTITY"`
-	WhenCreated     string `xml:"WHENCREATED"`
-	Description     string `xml:"DESCRIPTION"`
-	Description2    string `xml:"DESCRIPTION2"`
-	WhenPaid        string `xml:"WHENPAID"`
-	Currency        string `xml:"CURRENCY"`
-	Total           string `xml:"TOTALENTERED"`
+	RecordNo        string              `xml:"RECORDNO"`
+	Financialentity string              `xml:"FINANCIALENTITY"`
+	Description     string              `xml:"DESCRIPTION"`
+	Description2    string              `xml:"DESCRIPTION2"`
+	WhenCreated     string              `xml:"WHENCREATED"`
+	Currency        string              `xml:"CURRENCY"`
+	Total           string              `xml:"TOTALENTERED"`
+	Item            []CCTransactionItem `xml:"ccpayitems"`
+}
+
+type CCTransactionItem struct {
+	XMLName xml.Name `xml:"ccpayitem"`
+
+	Description   string `xml:"DESCRIPTION"`
+	PaymentAmount string `xml:"PAYMENTAMOUNT"`
+	ItemID        string `xml:"ITEMID"`
 }
 
 type CCTransactions struct {
@@ -28,20 +36,21 @@ func (ccTransactions CCTransactions) List(fromDate string, limit int) ([]CCTrans
 		Object:   "CCTRANSACTION",
 		Fields:   "*",
 		Query:    "WHENCREATED >= '" + fromDate + "'",
-		Pagesize: 1000,
+		Pagesize: 200,
 	}
 
-	data, next, err := ccTransactions.Client.makeRequestByQuery(list)
+	data, next, err := ccTransactions.makeRequestByQuery(list)
 	if err != nil {
 		return itemList, err
 	}
 
 	itemList = data.CCTransactions
-
-	for next != "" {
+	total := data.TotalCount
+	for total > len(itemList) && next != "" {
 		list := ReadMore{
 			ResultId: next,
 		}
+
 		var err error
 		var pageData *Data
 		pageData, next, err = ccTransactions.Client.makeRequestByQuery(list)
@@ -60,4 +69,3 @@ func (ccTransactions CCTransactions) List(fromDate string, limit int) ([]CCTrans
 
 	return itemList, nil
 }
-

@@ -7,19 +7,19 @@ import (
 type APPayment struct {
 	XMLName xml.Name `xml:"appymt"`
 
-	Financialentity      string            `xml:"FINANCIALENTITY"`
-	Paymentmethod        string            `xml:"PAYMENTMETHOD"`
-	Paymentrequestmethod string            `xml:"PAYMENTREQUESTMETHOD"`
-	Exch_rate_date       string            `xml:"EXCH_RATE_DATE"`
-	Exch_rate_type_id    string            `xml:"EXCH_RATE_TYPE_ID"`
-	VendorID             string            `xml:"VENDORID"`
-	DocNumber            string            `xml:"DOCNUMBER"`
-	Description          string            `xml:"DESCRIPTION"`
-	Paymentdate          string            `xml:"PAYMENTDATE"`
-	Currency             string            `xml:"CURRENCY"`
-	Basecurr             string            `xml:"BASECURR"`
-	Amounttopay          string            `xml:"AMOUNTTOPAY"`
-	Action               string            `xml:"ACTION"`
+	Financialentity      string `xml:"FINANCIALENTITY"`
+	Paymentmethod        string `xml:"PAYMENTMETHOD"`
+	Paymentrequestmethod string `xml:"PAYMENTREQUESTMETHOD"`
+	Exch_rate_date       string `xml:"EXCH_RATE_DATE"`
+	Exch_rate_type_id    string `xml:"EXCH_RATE_TYPE_ID"`
+	VendorID             string `xml:"VENDORID"`
+	DocNumber            string `xml:"DOCNUMBER"`
+	Description          string `xml:"DESCRIPTION"`
+	Paymentdate          string `xml:"PAYMENTDATE"`
+	Currency             string `xml:"CURRENCY"`
+	Basecurr             string `xml:"BASECURR"`
+	Amounttopay          string `xml:"AMOUNTTOPAY"`
+	Action               string `xml:"ACTION"`
 }
 
 type APPayments struct {
