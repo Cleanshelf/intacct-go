@@ -5,7 +5,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
-	"io/ioutil"
 )
 
 const ContentType = `x-intacct-xml-request`
@@ -51,9 +50,19 @@ func (c Client) CheckResponseErrors(body Response) error {
 	}
 
 	if body.Operation.Result.Status != Success && len(body.Operation.Result.ErrorMessage.Errors) > 0 {
-		errorDesc := body.Operation.Result.ErrorMessage.Errors[0].Description
-		if errorDesc == "" {
-			errorDesc = body.Operation.Result.ErrorMessage.Errors[0].Description2
+		errorDesc := ""
+		for _, respErr := range body.Operation.Result.ErrorMessage.Errors {
+			respErrorDesc := ""
+			if respErr.Description != "" {
+				respErrorDesc += respErr.Description + "; "
+			}
+			if respErr.Description2 != "" {
+				respErrorDesc += respErr.Description2 + "; "
+			}
+			if respErr.Correction != "" {
+				respErrorDesc += respErr.Correction
+			}
+			errorDesc = fmt.Sprintf("%s,%s", respErrorDesc, errorDesc)
 		}
 		return fmt.Errorf(
 			"%s", errorDesc,
@@ -61,7 +70,6 @@ func (c Client) CheckResponseErrors(body Response) error {
 	}
 	return nil
 }
-
 
 func (c Client) makeRequestByQuery(list interface{}) (*Data, string, error) {
 	get := Function{
@@ -80,6 +88,12 @@ func (c Client) makeRequestByQuery(list interface{}) (*Data, string, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, "", fmt.Errorf(
+			"non-200 status code: %d", resp.StatusCode,
+		)
+	}
+
 	var body Response
 	if err = xml.NewDecoder(resp.Body).Decode(&body); err != nil {
 		return nil, "", err
@@ -88,16 +102,6 @@ func (c Client) makeRequestByQuery(list interface{}) (*Data, string, error) {
 	// Check the response for errors
 	if err = c.CheckResponseErrors(body); err != nil {
 		return nil, "", err
-	}
-
-	// TODO pull out status code and body status checks into client
-	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return nil, "", err
-		}
-		bodyString := string(body)
-		return nil, "", fmt.Errorf("non-200 status code: %d, error: %s", resp.StatusCode, bodyString)
 	}
 
 	return &body.Operation.Result.Data, body.Operation.Result.Data.ResultId, nil
