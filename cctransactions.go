@@ -11,6 +11,7 @@ type CCTransaction struct {
 	Financialentity string              `xml:"FINANCIALENTITY"`
 	Description     string              `xml:"DESCRIPTION"`
 	Description2    string              `xml:"DESCRIPTION2"`
+	RecordID        string              `xml:"RECORDID"`
 	WhenCreated     string              `xml:"WHENCREATED"`
 	Currency        string              `xml:"CURRENCY"`
 	Total           string              `xml:"TOTALENTERED"`
