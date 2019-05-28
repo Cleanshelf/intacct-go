@@ -40,7 +40,7 @@ func (ccTransactions CCTransactions) List(fromDate string, limit int) ([]CCTrans
 		Pagesize: 200,
 	}
 
-	data, next, err := ccTransactions.makeRequestByQuery(list)
+	data, next, err := ccTransactions.Client.makeRequestByQuery(list)
 	if err != nil {
 		return itemList, err
 	}
