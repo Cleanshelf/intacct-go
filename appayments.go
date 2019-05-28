@@ -14,6 +14,7 @@ type APPayment struct {
 	Exch_rate_type_id    string `xml:"EXCH_RATE_TYPE_ID"`
 	VendorID             string `xml:"VENDORID"`
 	DocNumber            string `xml:"DOCNUMBER"`
+	WhenCreated          string `xml:"WHENCREATED"`
 	Description          string `xml:"DESCRIPTION"`
 	Paymentdate          string `xml:"PAYMENTDATE"`
 	Currency             string `xml:"CURRENCY"`
