@@ -7,23 +7,39 @@ import (
 type CCTransaction struct {
 	XMLName xml.Name `xml:"cctransaction"`
 
-	RecordNo        string              `xml:"RECORDNO"`
-	Financialentity string              `xml:"FINANCIALENTITY"`
-	Description     string              `xml:"DESCRIPTION"`
-	Description2    string              `xml:"DESCRIPTION2"`
-	RecordID        string              `xml:"RECORDID"`
-	WhenCreated     string              `xml:"WHENCREATED"`
-	Currency        string              `xml:"CURRENCY"`
-	Total           string              `xml:"TOTALENTERED"`
-	Item            []CCTransactionItem `xml:"ccpayitems"`
-}
-
-type CCTransactionItem struct {
-	XMLName xml.Name `xml:"ccpayitem"`
-
-	Description   string `xml:"DESCRIPTION"`
-	PaymentAmount string `xml:"PAYMENTAMOUNT"`
-	ItemID        string `xml:"ITEMID"`
+	RECORDNO        string `xml:"RECORDNO"`
+	FINANCIALENTITY string `xml:"FINANCIALENTITY"`
+	WHENCREATED     string `xml:"WHENCREATED"`
+	RECORDID        string `xml:"RECORDID"`
+	RECORDTYPE      string `xml:"RECORDTYPE"`
+	DESCRIPTION2    string `xml:"DESCRIPTION2"`
+	DESCRIPTION     string `xml:"DESCRIPTION"`
+	PRBATCHKEY      string `xml:"PRBATCHKEY"`
+	BASECURR        string `xml:"BASECURR"`
+	CURRENCY        string `xml:"CURRENCY"`
+	EXCHRATEDATE    string `xml:"EXCH_RATE_DATE"`
+	EXCHRATETYPEID  string `xml:"EXCH_RATE_TYPE_ID"`
+	EXCHANGERATE    string `xml:"EXCHANGE_RATE"`
+	TOTALENTERED    string `xml:"TOTALENTERED"`
+	TRXTOTALENTERED string `xml:"TRX_TOTALENTERED"`
+	TOTALPAID       string `xml:"TOTALPAID"`
+	TRXTOTALPAID    string `xml:"TRX_TOTALPAID"`
+	WHENPAID        string `xml:"WHENPAID"`
+	REVERSALKEY     string `xml:"REVERSALKEY"`
+	REVERSALDATE    string `xml:"REVERSALDATE"`
+	REVERSEDKEY     string `xml:"REVERSEDKEY"`
+	REVERSEDDATE    string `xml:"REVERSEDDATE"`
+	STATE           string `xml:"STATE"`
+	RAWSTATE        string `xml:"RAWSTATE"`
+	CLEARED         string `xml:"CLEARED"`
+	PAYMENTKEY      string `xml:"PAYMENTKEY"`
+	AUWHENCREATED   string `xml:"AUWHENCREATED"`
+	WHENMODIFIED    string `xml:"WHENMODIFIED"`
+	CREATEDBY       string `xml:"CREATEDBY"`
+	MODIFIEDBY      string `xml:"MODIFIEDBY"`
+	MEGAENTITYKEY   string `xml:"MEGAENTITYKEY"`
+	MEGAENTITYID    string `xml:"MEGAENTITYID"`
+	MEGAENTITYNAME  string `xml:"MEGAENTITYNAME"`
 }
 
 type CCTransactions struct {
