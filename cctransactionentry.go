@@ -66,7 +66,7 @@ type CCTransactionEntries struct {
 	Client
 }
 
-func (CCTransactionEntries CCTransactionEntries) ListByTransactionIds(transactionIDs []string) ([]CCTransactionEntry, error) {
+func (ccTransactionEntries CCTransactionEntries) ListByTransactionIds(transactionIDs []string) ([]CCTransactionEntry, error) {
 	if transactionIDs == nil || len(transactionIDs) == 0 {
 		return make([]CCTransactionEntry, 0), nil
 	}
@@ -78,7 +78,7 @@ func (CCTransactionEntries CCTransactionEntries) ListByTransactionIds(transactio
 		Pagesize: 200,
 	}
 
-	data, next, err := CCTransactionEntries.Client.makeRequestByQuery(query)
+	data, next, err := ccTransactionEntries.Client.makeRequestByQuery(query)
 	if err != nil {
 		return make([]CCTransactionEntry, 0), err
 	}
@@ -92,7 +92,7 @@ func (CCTransactionEntries CCTransactionEntries) ListByTransactionIds(transactio
 
 		var err error
 		var pageData *Data
-		pageData, next, err = CCTransactionEntries.Client.makeRequestByQuery(query)
+		pageData, next, err = ccTransactionEntries.Client.makeRequestByQuery(query)
 		if err != nil {
 			return ccEntries, err
 		}
