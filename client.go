@@ -113,16 +113,17 @@ func newClient(requestClient *http.Client, config Config) Client {
 
 type API struct {
 	Client
-	Invoices       Invoices
-	Vendors        Vendors
-	Customers      Customers
-	Bills          Bills
-	APRecurBills   APRecurBills
-	APPayments     APPayments
-	CCTransactions CCTransactions
-	EPPayments     EPPayments
-	PODocuments    PODocuments
-	Attachments    Attachments
+	Invoices             Invoices
+	Vendors              Vendors
+	Customers            Customers
+	Bills                Bills
+	APRecurBills         APRecurBills
+	APPayments           APPayments
+	CCTransactions       CCTransactions
+	CCTransactionEntries CCTransactionEntries
+	EPPayments           EPPayments
+	PODocuments          PODocuments
+	Attachments          Attachments
 }
 
 func NewAPI(requestClient *http.Client, config Config) (api API) {
@@ -136,6 +137,7 @@ func NewAPI(requestClient *http.Client, config Config) (api API) {
 	api.APRecurBills = APRecurBills{Client: client}
 	api.APPayments = APPayments{Client: client}
 	api.CCTransactions = CCTransactions{Client: client}
+	api.CCTransactionEntries = CCTransactionEntries{Client: client}
 	api.EPPayments = EPPayments{Client: client}
 	api.PODocuments = PODocuments{Client: client}
 	api.Attachments = Attachments{Client: client}

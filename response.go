@@ -56,15 +56,16 @@ type Data struct {
 	ResultId     string `xml:"resultId,attr"`
 	TotalCount   int    `xml:"totalcount,attr"`
 
-	Invoices       []Invoice       `xml:"invoice"`
-	Vendors        []Vendor        `xml:"vendor"`
-	Bills          []Bill          `xml:"apbill"`
-	APRecurBills   []APRecurBill   `xml:"aprecurbill"`
-	APPayments     []APPayment     `xml:"appymt"`
-	CCTransactions []CCTransaction `xml:"cctransaction"`
-	EPPayments     []EPPayment     `xml:"eppayment"`
-	PODocuments    []PODocument    `xml:"podocument"`
-	Customers      []Customer      `xml:"customer"`
+	Invoices             []Invoice            `xml:"invoice"`
+	Vendors              []Vendor             `xml:"vendor"`
+	Bills                []Bill               `xml:"apbill"`
+	APRecurBills         []APRecurBill        `xml:"aprecurbill"`
+	APPayments           []APPayment          `xml:"appymt"`
+	CCTransactions       []CCTransaction      `xml:"cctransaction"`
+	CCTransactionEntries []CCTransactionEntry `xml:"cctransactionentry"`
+	EPPayments           []EPPayment          `xml:"eppayment"`
+	PODocuments          []PODocument         `xml:"podocument"`
+	Customers            []Customer           `xml:"customer"`
 
 	Supdocs []Supdoc `xml:"supdoc"`
 }
