@@ -67,10 +67,37 @@ type CCTransactionEntries struct {
 }
 
 func (ccTransactionEntries CCTransactionEntries) ListByTransactionIds(transactionIDs []string) ([]CCTransactionEntry, error) {
+	transactions := make([]CCTransactionEntry, 0)
 	if transactionIDs == nil || len(transactionIDs) == 0 {
-		return make([]CCTransactionEntry, 0), nil
+		return transactions, nil
 	}
 
+	chunkSize := 200
+	if len(transactionIDs) <= chunkSize {
+		return ccTransactionEntries.getTransactionsByIds(transactionIDs)
+	}
+
+	var chunks [][]string
+	for i := 0; i < len(transactionIDs); i += chunkSize {
+		end := i + chunkSize
+		if end > len(transactionIDs) {
+			end = len(transactionIDs)
+		}
+		chunks = append(chunks, transactionIDs[i:end])
+	}
+
+	for _, chunkIDs := range chunks {
+		transactionsChunk, err := ccTransactionEntries.getTransactionsByIds(chunkIDs)
+		if err != nil {
+			return transactions, err
+		}
+		transactions = append(transactions, transactionsChunk...)
+	}
+
+	return transactions, nil
+}
+
+func (ccTransactionEntries CCTransactionEntries) getTransactionsByIds(transactionIDs []string) ([]CCTransactionEntry, error) {
 	query := ReadByQuery{
 		Object:   "CCTRANSACTIONENTRY",
 		Fields:   "*",
