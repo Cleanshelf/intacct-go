@@ -35,6 +35,10 @@ func (poDocuments PODocuments) List(vendorID string, fromDate string, limit int)
 		Pagesize: 1000,
 	}
 
+	if vendorID != "" {
+		list.Query = "CUSTVENDID ='" + vendorID + "' AND " + list.Query
+	}
+
 	data, next, err := poDocuments.Client.makeRequestByQuery(list)
 	if err != nil {
 		return itemList, err

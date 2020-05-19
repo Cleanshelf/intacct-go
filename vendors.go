@@ -123,11 +123,12 @@ func (vendors Vendors) List(limit int) ([]Vendor, error) {
 }
 
 func (vendors Vendors) ListByQuery(limit int, query string) ([]Vendor, error) {
+	pageSize := 1000
 	list := ReadByQuery{
 		Object:   "vendor",
 		Fields:   "VENDORID,NAME,STATUS,VENDTYPE",
 		Query:    query,
-		Pagesize: 1000,
+		Pagesize: pageSize,
 	}
 
 	vendorsList, next, err := vendors.makeRequest(list)
@@ -139,7 +140,7 @@ func (vendors Vendors) ListByQuery(limit int, query string) ([]Vendor, error) {
 		return vendorsList[:limit], nil
 	}
 
-	for next != "" {
+	for next != "" && len(vendorsList) == pageSize {
 		list := ReadMore{
 			ResultId: next,
 		}
