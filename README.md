@@ -1,4 +1,8 @@
 # intacct-go
+
+### This repository is deprecated. The code has already been moved to the main repo: [#2589](https://github.com/Cleanshelf/squrb-v2/pull/2589)
+
+
 Go client for the Intacct API
 
 *THIS IS TECHNOLOGY DEMO THAT CAN CHANGE AT ANY TIME*
